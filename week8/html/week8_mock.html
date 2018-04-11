@@ -1,0 +1,155 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>week8_mock</title><meta name="generator" content="MATLAB 9.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-04-11"><meta name="DC.source" content="week8_mock.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Part 1  Input = 1500Hz Sine + noize</a></li><li><a href="#3">Part 2 Digital Filter generation and application</a></li><li><a href="#4">Part 3 Low Pass Filter 1000Hz</a></li><li><a href="#5">Part 4 Plot Magnitude spectra</a></li><li><a href="#6">Part 5</a></li></ul></div><pre class="codeinput">close; clear; clc;
+</pre><h2 id="2">Part 1  Input = 1500Hz Sine + noize</h2><pre class="codeinput">fs = 6000;
+t = linspace(0,1,fs);
+
+f = 1500;
+A = 2;
+sinWave = A*sin(2*pi*f*t);          <span class="comment">% sinusoid</span>
+Noise = randn(size(sinWave));       <span class="comment">% noise</span>
+Noise = 5*Noise/max(abs(Noise));    <span class="comment">% normalize noise</span>
+
+x1 = sinWave + Noise;
+</pre><h2 id="3">Part 2 Digital Filter generation and application</h2><pre class="codeinput">echo = zeros(size(t));
+echo([1,fs*0.3,fs*0.6,fs*0.9]) = [1,0.7,0.5,0.3]; <span class="comment">% delay taps every 0.3 seconds</span>
+x2 = conv(x1,echo);                               <span class="comment">% apply the filter to x1 using convolution</span>
+</pre><h2 id="4">Part 3 Low Pass Filter 1000Hz</h2><pre class="codeinput">fc = 1000;      <span class="comment">% cut-off frequency</span>
+r = fc/(fs/2); <span class="comment">% normalized cut-off frequency</span>
+tap = -256:256;  <span class="comment">% 513 taps</span>
+B = sinc(r*tap).*hamming(length(tap))'; <span class="comment">% !!hamming windowed</span>
+B = B/sum(B);   <span class="comment">% normalization, to avoid overflow</span>
+A = 1;
+x3=filter(B,A,x2);
+fvtool(B,A);
+
+BB = -B;
+BB(257) = 1-B(257);
+xx=filter(BB,A,x2);
+fvtool(BB,A);
+</pre><img vspace="5" hspace="5" src="week8_mock_01.png" alt=""> <img vspace="5" hspace="5" src="week8_mock_02.png" alt=""> <h2 id="5">Part 4 Plot Magnitude spectra</h2><pre class="codeinput">NFFT = 2^13;            <span class="comment">% greater than fs</span>
+X1 = abs(fft(x1,NFFT));
+X2 = abs(fft(x2,NFFT));
+X3 = abs(fft(x3,NFFT));
+XX = abs(fft(xx,NFFT));
+bins = linspace(0,fs,NFFT);
+subplot(411), plot(bins,X1),title(<span class="string">'Input Magnitude Spectrum'</span>);
+subplot(412), plot(bins,X2),title(<span class="string">'Echoed Filtered signal'</span>);
+subplot(413), plot(bins,X3),title(<span class="string">'1000Hz Lowpass Filtered'</span>);
+subplot(414), plot(bins,XX),title(<span class="string">'1000Hz Highpass Filtered'</span>);
+</pre><img vspace="5" hspace="5" src="week8_mock_03.png" alt=""> <h2 id="6">Part 5</h2><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close; clear; clc;
+%% Part 1  Input = 1500Hz Sine + noize
+fs = 6000;
+t = linspace(0,1,fs);
+
+f = 1500;
+A = 2;
+sinWave = A*sin(2*pi*f*t);          % sinusoid
+Noise = randn(size(sinWave));       % noise
+Noise = 5*Noise/max(abs(Noise));    % normalize noise
+
+x1 = sinWave + Noise;
+
+%% Part 2 Digital Filter generation and application
+echo = zeros(size(t));
+echo([1,fs*0.3,fs*0.6,fs*0.9]) = [1,0.7,0.5,0.3]; % delay taps every 0.3 seconds
+x2 = conv(x1,echo);                               % apply the filter to x1 using convolution
+
+%% Part 3 Low Pass Filter 1000Hz
+fc = 1000;      % cut-off frequency
+r = fc/(fs/2); % normalized cut-off frequency
+tap = -256:256;  % 513 taps
+B = sinc(r*tap).*hamming(length(tap))'; % !!hamming windowed
+B = B/sum(B);   % normalization, to avoid overflow
+A = 1;
+x3=filter(B,A,x2);
+fvtool(B,A);
+
+BB = -B;
+BB(257) = 1-B(257);
+xx=filter(BB,A,x2);
+fvtool(BB,A);
+
+%% Part 4 Plot Magnitude spectra
+NFFT = 2^13;            % greater than fs
+X1 = abs(fft(x1,NFFT));
+X2 = abs(fft(x2,NFFT));
+X3 = abs(fft(x3,NFFT));
+XX = abs(fft(xx,NFFT));
+bins = linspace(0,fs,NFFT);
+subplot(411), plot(bins,X1),title('Input Magnitude Spectrum');
+subplot(412), plot(bins,X2),title('Echoed Filtered signal');
+subplot(413), plot(bins,X3),title('1000Hz Lowpass Filtered');
+subplot(414), plot(bins,XX),title('1000Hz Highpass Filtered');
+
+%% Part 5
+##### SOURCE END #####
+--></body></html>

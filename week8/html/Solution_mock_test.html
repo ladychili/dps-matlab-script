@@ -1,0 +1,254 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Solution_mock_test</title><meta name="generator" content="MATLAB 9.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-04-11"><meta name="DC.source" content="Solution_mock_test.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">close; clear; clc;
+</pre><pre class="codeinput"><span class="comment">% 1.	Generate a signal x1 of sampling frequency fs = 6000 Hz,</span>
+<span class="comment">% of duration 2 s, and which is the superposition of a sinusoid of</span>
+<span class="comment">% frequency 1500 Hz and amplitude 2 with randomly generated noise of</span>
+<span class="comment">% amplitude 5.</span>
+
+fs = 6000; <span class="comment">%Hz sampling frequency</span>
+duration = 2; <span class="comment">% s duration</span>
+
+f = 1500; <span class="comment">%Hz, frequency of the sinusoind</span>
+
+a = 2; <span class="comment">%amplitude of the sinusoind</span>
+a_n = 5; <span class="comment">%amplitude of the noise</span>
+
+t = 0:1/(fs-1):duration; <span class="comment">% time samples</span>
+
+s1 = a*sin(2*pi*f*t); <span class="comment">%sinusoid</span>
+
+noise = randn(size(s1));
+noise = a_n * noise/max(abs(noise)); <span class="comment">% normalize and multiply by 5</span>
+
+x1 = s1 + noise; <span class="comment">%superposition</span>
+</pre><pre class="codeinput"><span class="comment">% 2.	Generate a digital filter that produces an echo effect with</span>
+<span class="comment">% delay taps every 0.3 seconds and decreasing amplitudes: {1, 0.7, 0.5, 0.3}.</span>
+<span class="comment">% Apply it by convolution to the noisy signal x1 and call the output x2.</span>
+
+echo = zeros(size(t)); <span class="comment">%initialize at 0</span>
+echo(1) = 1;
+echo(round(0.3*fs)) = 0.7; <span class="comment">% closest sample to 0.3 s</span>
+echo(round(0.6*fs)) = 0.5; <span class="comment">% closest sample to 0.6 s</span>
+echo(round(0.9*fs)) = 0.3; <span class="comment">% closest sample to 0.9 s</span>
+
+x2 = conv(x1, echo);
+
+<span class="comment">%x2 = x1;</span>
+</pre><pre class="codeinput"><span class="comment">% 3.	Design a low-pass filter with a cut-off frequency of 1000 Hz.</span>
+<span class="comment">% Apply it to signal x2 and call the output x3.</span>
+<span class="comment">% Produce a plot of the magnitude response of the filter.</span>
+
+<span class="comment">% Will design a hamming-windowed sinc low-pass filter with a cut-off</span>
+<span class="comment">% frequency of 1000 Hz.</span>
+
+<span class="comment">% Generate the lowpass filter</span>
+f_cutoff = 1000;  <span class="comment">% cutoff freq of the lowpass filter</span>
+r = f_cutoff/(fs/2); <span class="comment">% normalized cutoff frequency</span>
+
+tap = -256:256;  <span class="comment">% This will be a 513-tap filter</span>
+<span class="comment">% Generate the coefficients of the filter</span>
+
+B = sinc(r*tap).* hamming(length(tap))'; <span class="comment">% hamming-windowed sinc</span>
+<span class="comment">%B = B/sum(B); %sometimes it is necessary to normalize the B-coeffs</span>
+
+A = 1; <span class="comment">%-&gt; Since this is FIR</span>
+
+
+<span class="comment">% APPLY THE LOWPASS SINC FILTER:</span>
+x3 = filter(B, A, x2); <span class="comment">% -&gt; Output signal. EQUIVALENT TO: y = conv(B, x);</span>
+
+<span class="comment">%Produce a plot of the magnitude response of the filter:</span>
+fvtool(B,A);
+</pre><img vspace="5" hspace="5" src="Solution_mock_test_01.png" alt=""> <p>4.	Calculate and plot the magnitude spectra of the signals generated above: x1, x2, x3.</p><pre class="codeinput">NFFT = 2^13;
+figure(2)
+X1 = abs(fft(x1, NFFT));
+
+bins = linspace(0, fs, NFFT); <span class="comment">% There are NFFT frequency bins, which are linearly spaced between 0 and fs Hz.</span>
+
+subplot(311);
+plot(bins, X1);
+title (<span class="string">'Spectrum of x1'</span>)
+xlabel(<span class="string">'frequency [Hz]'</span>)
+
+X2 = abs(fft(x2, NFFT));
+subplot(312);
+plot(bins, X2);
+title (<span class="string">'Spectrum of x2'</span>)
+xlabel(<span class="string">'frequency [Hz]'</span>)
+
+X3 = abs(fft(x3, NFFT));
+subplot(313);
+plot(bins, X3);
+title (<span class="string">'Spectrum of x3'</span>)
+xlabel(<span class="string">'frequency [Hz]'</span>)
+</pre><img vspace="5" hspace="5" src="Solution_mock_test_02.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close; clear; clc;
+%%
+
+% 1.	Generate a signal x1 of sampling frequency fs = 6000 Hz, 
+% of duration 2 s, and which is the superposition of a sinusoid of 
+% frequency 1500 Hz and amplitude 2 with randomly generated noise of 
+% amplitude 5.
+
+fs = 6000; %Hz sampling frequency
+duration = 2; % s duration
+
+f = 1500; %Hz, frequency of the sinusoind
+
+a = 2; %amplitude of the sinusoind
+a_n = 5; %amplitude of the noise
+
+t = 0:1/(fs-1):duration; % time samples
+
+s1 = a*sin(2*pi*f*t); %sinusoid
+
+noise = randn(size(s1));
+noise = a_n * noise/max(abs(noise)); % normalize and multiply by 5
+
+x1 = s1 + noise; %superposition
+
+%%
+
+% 2.	Generate a digital filter that produces an echo effect with 
+% delay taps every 0.3 seconds and decreasing amplitudes: {1, 0.7, 0.5, 0.3}. 
+% Apply it by convolution to the noisy signal x1 and call the output x2.
+
+echo = zeros(size(t)); %initialize at 0
+echo(1) = 1;
+echo(round(0.3*fs)) = 0.7; % closest sample to 0.3 s
+echo(round(0.6*fs)) = 0.5; % closest sample to 0.6 s
+echo(round(0.9*fs)) = 0.3; % closest sample to 0.9 s
+ 
+x2 = conv(x1, echo);
+
+%x2 = x1;
+
+%%
+
+% 3.	Design a low-pass filter with a cut-off frequency of 1000 Hz. 
+% Apply it to signal x2 and call the output x3. 
+% Produce a plot of the magnitude response of the filter. 
+
+% Will design a hamming-windowed sinc low-pass filter with a cut-off 
+% frequency of 1000 Hz.  
+
+% Generate the lowpass filter
+f_cutoff = 1000;  % cutoff freq of the lowpass filter
+r = f_cutoff/(fs/2); % normalized cutoff frequency
+
+tap = -256:256;  % This will be a 513-tap filter
+% Generate the coefficients of the filter
+
+B = sinc(r*tap).* hamming(length(tap))'; % hamming-windowed sinc 
+%B = B/sum(B); %sometimes it is necessary to normalize the B-coeffs
+
+A = 1; %-> Since this is FIR
+
+
+% APPLY THE LOWPASS SINC FILTER:
+x3 = filter(B, A, x2); % -> Output signal. EQUIVALENT TO: y = conv(B, x);
+
+%Produce a plot of the magnitude response of the filter:
+fvtool(B,A);
+
+%%
+% 4.	Calculate and plot the magnitude spectra of the signals 
+% generated above: x1, x2, x3.
+
+NFFT = 2^13; 
+figure(2)
+X1 = abs(fft(x1, NFFT)); 
+
+bins = linspace(0, fs, NFFT); % There are NFFT frequency bins, which are linearly spaced between 0 and fs Hz.  
+
+subplot(311);
+plot(bins, X1);
+title ('Spectrum of x1')
+xlabel('frequency [Hz]')
+
+X2 = abs(fft(x2, NFFT));
+subplot(312);
+plot(bins, X2);
+title ('Spectrum of x2')
+xlabel('frequency [Hz]')
+
+X3 = abs(fft(x3, NFFT));
+subplot(313);
+plot(bins, X3);
+title ('Spectrum of x3')
+xlabel('frequency [Hz]')
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>
